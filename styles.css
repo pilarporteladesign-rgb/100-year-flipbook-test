@@ -5,6 +5,8 @@
 :root {
   --book-max-width: 1440px;
 
+  --safe-area: 64px;
+
   --blue: #0074c8;
   --blue-dark: #152f87;
 
@@ -36,6 +38,11 @@ body {
 }
 
 
+html {
+  overflow-x: hidden;
+}
+
+
 body {
   overflow-x: hidden;
 
@@ -50,30 +57,36 @@ body {
 
 /* ============================================
    APPLICATION
+
+   64px SAFE AREA ON ALL SIDES
    ============================================ */
 
 .flipbook-app {
   width: 100%;
 
   padding:
-    clamp(16px, 3vw, 40px);
+    var(--safe-area);
+
+  overflow: hidden;
 }
 
 
 /* ============================================
    BOOK AREA
 
-   Always represents the complete open-book
-   footprint:
+   The available width is reduced by the
+   64px padding on both sides.
 
-   1440 × 720
-   2:1 aspect ratio
+   The 2:1 aspect ratio preserves:
+   Page = 1:1
+   Open book = 2:1
    ============================================ */
 
 .book-area {
   position: relative;
 
   width: 100%;
+
   max-width:
     var(--book-max-width);
 
@@ -101,7 +114,7 @@ body {
 
   transition:
     transform
-    700ms
+    500ms
     cubic-bezier(0.65, 0, 0.35, 1);
 
   will-change: transform;
@@ -109,13 +122,12 @@ body {
 
 
 /*
-   PAGE 1
+   FRONT COVER
 
-   Turn.js puts the front cover on the
-   right half of a double-page book.
+   Turn.js positions Page 1 on the right half.
 
-   Move the complete book left by 25%
-   so Page 1 visually sits in the center.
+   Move the book 25% left so the square
+   cover appears centered.
 */
 
 .book-wrapper.cover-position {
@@ -125,9 +137,7 @@ body {
 
 
 /*
-   OPEN SPREAD
-
-   Pages occupy both halves of the stage.
+   OPEN BOOK
 */
 
 .book-wrapper.spread-position {
@@ -139,11 +149,7 @@ body {
 /*
    BACK COVER
 
-   Turn.js leaves the final page on the
-   left side.
-
-   Move the complete book right by 25%
-   to center Page 8.
+   Move 25% right so Page 8 appears centered.
 */
 
 .book-wrapper.back-position {
@@ -199,6 +205,12 @@ body {
   width: 100%;
   height: 100%;
 
+  /*
+   * Your images are 720 × 720.
+   *
+   * Turn.js gives each physical page
+   * half of the 2:1 book, which is also 1:1.
+   */
   object-fit: contain;
 
   background:
@@ -239,107 +251,43 @@ body {
 
 
 /* ============================================
-   INNER-SPINE SHADING
+   REMOVE CUSTOM CENTER/SPINE SHADING
+
+   The previous version added dark gradients
+   to the inner edges of left/right pages.
+
+   Remove those completely.
    ============================================ */
 
 .flipbook .even::after,
 .flipbook .odd::after {
-  content: "";
-
-  position: absolute;
-
-  z-index: 8;
-
-  top: 0;
-  bottom: 0;
-
-  width: 7%;
-
-  pointer-events: none;
-}
-
-
-.flipbook .even::after {
-  right: 0;
-
-  background:
-    linear-gradient(
-      to left,
-      rgba(0, 0, 0, 0.13),
-      rgba(0, 0, 0, 0.03) 45%,
-      transparent
-    );
-}
-
-
-.flipbook .odd::after {
-  left: 0;
-
-  background:
-    linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.13),
-      rgba(0, 0, 0, 0.03) 45%,
-      transparent
-    );
+  display: none;
 }
 
 
 /* ============================================
-   TURN.JS SHADOW
+   TURN.JS PAGE-TURN SHADOW
+
+   Keep Turn.js's dynamic shadow because it
+   helps the moving page look physical.
+
+   This is NOT the static center line.
    ============================================ */
 
 .flipbook .shadow {
-  opacity: 0.25;
+  opacity: 0.22;
 }
 
 
 /* ============================================
-   CENTER SPINE
+   REMOVE STATIC CENTER LINE
+
+   No permanent line or shadow should appear
+   between the two open pages.
    ============================================ */
 
 .book-area::after {
-  content: "";
-
-  position: absolute;
-
-  z-index: 5000;
-
-  top: 1%;
-  bottom: 1%;
-
-  left: 50%;
-
-  width: 2px;
-
-  transform:
-    translateX(-50%);
-
-  opacity: 0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(0, 0, 0, 0.16) 10%,
-      rgba(0, 0, 0, 0.24) 50%,
-      rgba(0, 0, 0, 0.16) 90%,
-      transparent
-    );
-
-  box-shadow:
-    0 0 18px
-    rgba(0, 0, 0, 0.18);
-
-  pointer-events: none;
-
-  transition:
-    opacity 250ms ease;
-}
-
-
-.book-area.is-open::after {
-  opacity: 1;
+  display: none;
 }
 
 
@@ -359,9 +307,9 @@ body {
   cursor: default;
 
   /*
-    User can still vertically scroll a webpage
-    on touch devices.
-  */
+   * Allows normal vertical browser gestures
+   * without letting Turn.js grab pages.
+   */
   touch-action: pan-y;
 }
 
@@ -383,8 +331,7 @@ body {
 
   gap: 18px;
 
-  margin-top:
-    clamp(20px, 3vw, 32px);
+  margin-top: 24px;
 }
 
 
@@ -504,12 +451,23 @@ body {
 
 /* ============================================
    RESPONSIVE
+
+   We preserve the requested 64px safe area
+   whenever the viewport can reasonably
+   accommodate it.
    ============================================ */
 
 @media (max-width: 700px) {
 
-  .flipbook-app {
-    padding: 12px;
+  /*
+   * On very narrow displays, 64px on each side
+   * would consume too much of the viewport.
+   *
+   * Keep a meaningful 24px safe area instead.
+   */
+
+  :root {
+    --safe-area: 24px;
   }
 
 

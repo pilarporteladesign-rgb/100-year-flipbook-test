@@ -1,24 +1,32 @@
 /* ============================================
-   BASE
+   VARIABLES
    ============================================ */
 
 :root {
   --book-max-width: 1440px;
-
-  --safe-area: 64px;
 
   --blue: #0074c8;
   --blue-dark: #152f87;
 
   --page-background: #ffffff;
 
-  --shadow:
+  --page-shadow:
     0 18px 45px rgba(0, 28, 52, 0.18);
 
   --cover-shadow:
     0 22px 55px rgba(0, 28, 52, 0.24);
+
+  --desktop-button-size: 56px;
+  --desktop-button-gap: 64px;
+
+  --tablet-button-size: 48px;
+  --mobile-button-size: 48px;
 }
 
+
+/* ============================================
+   RESET
+   ============================================ */
 
 *,
 *::before,
@@ -30,16 +38,12 @@
 html,
 body {
   margin: 0;
+  padding: 0;
 
   width: 100%;
   min-height: 100%;
 
   background: transparent;
-}
-
-
-html {
-  overflow-x: hidden;
 }
 
 
@@ -57,44 +61,36 @@ body {
 
 /* ============================================
    APPLICATION
-
-   64px SAFE AREA ON ALL SIDES
    ============================================ */
 
 .flipbook-app {
+  position: relative;
+
   width: 100%;
 
-  padding:
-    var(--safe-area);
+  margin: 0;
+  padding: 0;
 
   overflow: hidden;
+
+  background: transparent;
 }
 
 
 /* ============================================
    BOOK AREA
-
-   The available width is reduced by the
-   64px padding on both sides.
-
-   The 2:1 aspect ratio preserves:
-   Page = 1:1
-   Open book = 2:1
    ============================================ */
 
 .book-area {
   position: relative;
 
-  width: 100%;
-
-  max-width:
-    var(--book-max-width);
-
   aspect-ratio: 2 / 1;
 
-  margin-inline: auto;
+  margin: 0 auto;
 
   overflow: visible;
+
+  background: transparent;
 }
 
 
@@ -110,6 +106,8 @@ body {
   width: 100%;
   height: 100%;
 
+  background: transparent;
+
   transform: translateX(0);
 
   transition:
@@ -122,39 +120,29 @@ body {
 
 
 /*
-   FRONT COVER
-
-   Turn.js positions Page 1 on the right half.
-
-   Move the book 25% left so the square
-   cover appears centered.
-*/
+ * Front cover.
+ */
 
 .book-wrapper.cover-position {
-  transform:
-    translateX(-25%);
+  transform: translateX(-25%);
 }
 
 
 /*
-   OPEN BOOK
-*/
+ * Interior spread.
+ */
 
 .book-wrapper.spread-position {
-  transform:
-    translateX(0);
+  transform: translateX(0);
 }
 
 
 /*
-   BACK COVER
-
-   Move 25% right so Page 8 appears centered.
-*/
+ * Back cover.
+ */
 
 .book-wrapper.back-position {
-  transform:
-    translateX(25%);
+  transform: translateX(25%);
 }
 
 
@@ -165,17 +153,16 @@ body {
 .flipbook {
   position: absolute;
 
-  top: 0;
-  left: 0;
+  inset: 0;
 
   width: 100%;
   height: 100%;
 
-  transform-style:
-    preserve-3d;
+  background: transparent;
 
-  -webkit-tap-highlight-color:
-    transparent;
+  transform-style: preserve-3d;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -205,12 +192,6 @@ body {
   width: 100%;
   height: 100%;
 
-  /*
-   * Your images are 720 × 720.
-   *
-   * Turn.js gives each physical page
-   * half of the 2:1 book, which is also 1:1.
-   */
   object-fit: contain;
 
   background:
@@ -238,7 +219,7 @@ body {
 
 
 /* ============================================
-   TURN.JS GENERATED PAGES
+   TURN.JS GENERATED ELEMENTS
    ============================================ */
 
 .flipbook .turn-page {
@@ -246,18 +227,13 @@ body {
     var(--page-background);
 
   box-shadow:
-    var(--shadow);
+    var(--page-shadow);
 }
 
 
-/* ============================================
-   REMOVE CUSTOM CENTER/SPINE SHADING
-
-   The previous version added dark gradients
-   to the inner edges of left/right pages.
-
-   Remove those completely.
-   ============================================ */
+/*
+ * Remove permanent inner-page shading.
+ */
 
 .flipbook .even::after,
 .flipbook .odd::after {
@@ -265,14 +241,19 @@ body {
 }
 
 
-/* ============================================
-   TURN.JS PAGE-TURN SHADOW
+/*
+ * Remove permanent center line.
+ */
 
-   Keep Turn.js's dynamic shadow because it
-   helps the moving page look physical.
+.book-area::after {
+  display: none;
+}
 
-   This is NOT the static center line.
-   ============================================ */
+
+/*
+ * Keep Turn.js's temporary shadow during
+ * the actual page movement.
+ */
 
 .flipbook .shadow {
   opacity: 0.22;
@@ -280,19 +261,7 @@ body {
 
 
 /* ============================================
-   REMOVE STATIC CENTER LINE
-
-   No permanent line or shadow should appear
-   between the two open pages.
-   ============================================ */
-
-.book-area::after {
-  display: none;
-}
-
-
-/* ============================================
-   BLOCK MOUSE PAGE GRABBING
+   BLOCK DIRECT PAGE DRAGGING
    ============================================ */
 
 .book-interaction-blocker {
@@ -306,34 +275,13 @@ body {
 
   cursor: default;
 
-  /*
-   * Allows normal vertical browser gestures
-   * without letting Turn.js grab pages.
-   */
   touch-action: pan-y;
 }
 
 
 /* ============================================
-   CONTROLS
+   COMMON BUTTON STYLING
    ============================================ */
-
-.book-controls {
-  display: grid;
-
-  grid-template-columns:
-    56px
-    minmax(110px, auto)
-    56px;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 18px;
-
-  margin-top: 24px;
-}
-
 
 .control-button {
   display: inline-flex;
@@ -341,9 +289,7 @@ body {
   align-items: center;
   justify-content: center;
 
-  width: 56px;
-  height: 56px;
-
+  margin: 0;
   padding: 0;
 
   border:
@@ -351,7 +297,7 @@ body {
 
   border-radius: 50%;
 
-  background: #ffffff;
+  background: transparent;
 
   color:
     var(--blue);
@@ -365,25 +311,9 @@ body {
 }
 
 
-.control-button:hover:not(:disabled) {
-  background:
-    #eef7fc;
-
-  transform:
-    scale(1.04);
-}
-
-
-.control-button:active:not(:disabled) {
-  transform:
-    scale(0.96);
-}
-
-
 .control-button:focus-visible {
   outline:
-    3px solid
-    var(--blue-dark);
+    3px solid var(--blue-dark);
 
   outline-offset: 3px;
 }
@@ -402,8 +332,7 @@ body {
 
   fill: none;
 
-  stroke:
-    currentColor;
+  stroke: currentColor;
 
   stroke-width: 2.25;
 
@@ -412,80 +341,258 @@ body {
 }
 
 
-.page-indicator {
-  min-width: 110px;
-
-  margin: 0;
-
-  text-align: center;
-
-  font-size: 15px;
-  font-weight: 600;
-
-  line-height: 1.4;
-}
-
-
 /* ============================================
-   ACCESSIBILITY
+   HIDE VISUAL PAGE INDICATOR
+
+   Keep it available for accessibility and JS.
    ============================================ */
 
+.page-indicator,
 .visually-hidden {
-  position: absolute;
+  position: absolute !important;
 
-  width: 1px;
-  height: 1px;
+  width: 1px !important;
+  height: 1px !important;
 
-  margin: -1px;
-  padding: 0;
+  margin: -1px !important;
+  padding: 0 !important;
 
-  overflow: hidden;
+  overflow: hidden !important;
 
-  clip: rect(0 0 0 0);
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
 
-  white-space: nowrap;
+  white-space: nowrap !important;
 
-  border: 0;
+  border: 0 !important;
 }
 
 
 /* ============================================
-   RESPONSIVE
+   DESKTOP
+   1152px AND ABOVE
 
-   We preserve the requested 64px safe area
-   whenever the viewport can reasonably
-   accommodate it.
+   Layout:
+
+   [Previous]  >=64px  [BOOK]  >=64px  [Next]
+
+   Buttons sit at viewport edges when space
+   allows, so spacing can exceed 64px.
    ============================================ */
 
-@media (max-width: 700px) {
+@media (min-width: 1152px) {
 
-  /*
-   * On very narrow displays, 64px on each side
-   * would consume too much of the viewport.
-   *
-   * Keep a meaningful 24px safe area instead.
-   */
+  .flipbook-app {
+    position: relative;
 
-  :root {
-    --safe-area: 24px;
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
   }
 
 
+  /*
+   * Reserve enough horizontal room for:
+   *
+   * 56px previous
+   * 64px minimum gap
+   * BOOK
+   * 64px minimum gap
+   * 56px next
+   *
+   * = 240px total reserved space.
+   */
+
+  .book-area {
+    width: min(
+      var(--book-max-width),
+      calc(
+        100vw -
+        (
+          (var(--desktop-button-size) * 2) +
+          (var(--desktop-button-gap) * 2)
+        )
+      )
+    );
+
+    aspect-ratio: 2 / 1;
+
+    margin: 0 auto;
+  }
+
+
+  /*
+   * Control layer overlays the complete
+   * flipbook application.
+   */
+
   .book-controls {
-    grid-template-columns:
-      48px
-      minmax(96px, auto)
-      48px;
+    position: absolute;
 
-    gap: 12px;
+    z-index: 20000;
 
-    margin-top: 18px;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    /*
+     * Match the height of the centered book.
+     * Since book ratio is 2:1, height equals
+     * half its rendered width.
+     */
+
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    pointer-events: none;
   }
 
 
   .control-button {
-    width: 48px;
-    height: 48px;
+    position: absolute;
+
+    top: 50%;
+
+    width:
+      var(--desktop-button-size);
+
+    height:
+      var(--desktop-button-size);
+
+    transform:
+      translateY(-50%);
+
+    pointer-events: auto;
+  }
+
+
+  #previous-button {
+    left: 0;
+  }
+
+
+  #next-button {
+    right: 0;
+  }
+
+
+  .control-button:hover:not(:disabled) {
+    background:
+      rgba(238, 247, 252, 0.8);
+
+    transform:
+      translateY(-50%)
+      scale(1.04);
+  }
+
+
+  .control-button:active:not(:disabled) {
+    transform:
+      translateY(-50%)
+      scale(0.96);
+  }
+
+}
+
+
+/* ============================================
+   TABLET
+   700px TO 1151px
+
+   Buttons below and centered.
+   ============================================ */
+
+@media
+  (min-width: 700px)
+  and (max-width: 1151px) {
+
+  .flipbook-app {
+    position: relative;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+  }
+
+
+  .book-area {
+    width: 100%;
+
+    max-width:
+      var(--book-max-width);
+
+    aspect-ratio: 2 / 1;
+
+    margin: 0 auto;
+  }
+
+
+  .book-controls {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: auto;
+
+    gap: 16px;
+
+    margin: 24px 0 0;
+    padding: 0 0 24px;
+
+    pointer-events: auto;
+  }
+
+
+  .control-button {
+    position: relative;
+
+    width:
+      var(--tablet-button-size);
+
+    height:
+      var(--tablet-button-size);
+
+    transform: none;
+  }
+
+
+  #previous-button,
+  #next-button {
+    position: relative;
+
+    top: auto;
+    left: auto;
+    right: auto;
+
+    transform: none;
+  }
+
+
+  .control-button:hover:not(:disabled) {
+    background:
+      rgba(238, 247, 252, 0.8);
+
+    transform:
+      scale(1.04);
+  }
+
+
+  .control-button:active:not(:disabled) {
+    transform:
+      scale(0.96);
   }
 
 
@@ -494,12 +601,104 @@ body {
     height: 22px;
   }
 
+}
 
-  .page-indicator {
-    min-width: 96px;
 
-    font-size: 14px;
+/* ============================================
+   MOBILE
+   699px AND BELOW
+
+   Buttons below and centered.
+   ============================================ */
+
+@media (max-width: 699px) {
+
+  .flipbook-app {
+    position: relative;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
   }
+
+
+  .book-area {
+    width: 100%;
+
+    aspect-ratio: 2 / 1;
+
+    margin: 0 auto;
+  }
+
+
+  .book-controls {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: auto;
+
+    gap: 12px;
+
+    margin: 20px 0 0;
+    padding: 0 0 20px;
+
+    pointer-events: auto;
+  }
+
+
+  .control-button {
+    position: relative;
+
+    width:
+      var(--mobile-button-size);
+
+    height:
+      var(--mobile-button-size);
+
+    transform: none;
+  }
+
+
+  #previous-button,
+  #next-button {
+    position: relative;
+
+    top: auto;
+    left: auto;
+    right: auto;
+
+    transform: none;
+  }
+
+
+  .control-button:hover:not(:disabled) {
+    background:
+      rgba(238, 247, 252, 0.8);
+
+    transform:
+      scale(1.04);
+  }
+
+
+  .control-button:active:not(:disabled) {
+    transform:
+      scale(0.96);
+  }
+
+
+  .control-button svg {
+    width: 22px;
+    height: 22px;
+  }
+
 }
 
 
@@ -517,4 +716,5 @@ body {
   .control-button {
     transition-duration: 1ms;
   }
+
 }

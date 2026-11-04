@@ -1,51 +1,32 @@
 /*
  * ============================================
- * FLIPBOOK CONFIGURATION
+ * CONFIGURATION
  * ============================================
  */
 
 const CONFIG = {
   totalPages: 8,
 
-  /*
-   * Original physical page size.
-   */
   pageWidth: 720,
   pageHeight: 720,
 
-  /*
-   * Complete open book:
-   * 1440 × 720
-   */
   bookWidth: 1440,
   bookHeight: 720,
 
   /*
-   * Page-turn duration.
-   *
-   * Previous version: 900ms
-   * Updated: 700ms
+   * Page-turn animation.
    */
   duration: 700,
 
-  /*
-   * Page elevation while turning.
-   */
   elevation: 70,
 
-  /*
-   * Delay before resizing after
-   * the browser changes size.
-   */
   resizeDelay: 120
 };
 
 
-/*
- * ============================================
- * APPLICATION STATE
- * ============================================
- */
+/* ============================================
+   STATE
+   ============================================ */
 
 let isTurning = false;
 
@@ -54,11 +35,9 @@ let resizeTimer = null;
 let isInitialised = false;
 
 
-/*
- * ============================================
- * DOM REFERENCES
- * ============================================
- */
+/* ============================================
+   DOM
+   ============================================ */
 
 const bookArea =
   document.querySelector(
@@ -102,59 +81,55 @@ const status =
   );
 
 
-/*
- * ============================================
- * CHECK REQUIRED ELEMENTS
- * ============================================
- */
+/* ============================================
+   VALIDATION
+   ============================================ */
 
 function checkMarkup() {
 
-  const missingElements = [];
+  const missing = [];
 
 
   if (!bookArea) {
-    missingElements.push(
+    missing.push(
       ".book-area"
     );
   }
 
 
   if (!bookWrapper) {
-    missingElements.push(
+    missing.push(
       "#book-wrapper"
     );
   }
 
 
   if (!flipbook) {
-    missingElements.push(
+    missing.push(
       "#flipbook"
     );
   }
 
 
   if (!previousButton) {
-    missingElements.push(
+    missing.push(
       "#previous-button"
     );
   }
 
 
   if (!nextButton) {
-    missingElements.push(
+    missing.push(
       "#next-button"
     );
   }
 
 
-  if (
-    missingElements.length > 0
-  ) {
+  if (missing.length) {
 
     throw new Error(
       "Flipbook markup error. Missing: " +
-      missingElements.join(", ")
+      missing.join(", ")
     );
 
   }
@@ -162,11 +137,9 @@ function checkMarkup() {
 }
 
 
-/*
- * ============================================
- * CHECK LIBRARIES
- * ============================================
- */
+/* ============================================
+   DEPENDENCIES
+   ============================================ */
 
 function checkDependencies() {
 
@@ -196,33 +169,29 @@ function checkDependencies() {
 }
 
 
-/*
- * ============================================
- * RESPONSIVE BOOK SIZE
- * ============================================
- */
+/* ============================================
+   RESPONSIVE SIZE
+   ============================================ */
 
 function getBookSize() {
 
-  /*
-   * CSS determines the width of .book-area.
-   *
-   * JavaScript simply reads that value so
-   * Turn.js always matches the CSS layout.
-   */
+  const rect =
+    bookArea.getBoundingClientRect();
+
 
   const width =
     Math.max(
       1,
       Math.round(
-        bookArea.getBoundingClientRect().width
+        rect.width
       )
     );
 
 
   /*
-   * Open book must always remain exactly 2:1.
+   * Open book always stays 2:1.
    */
+
   const height =
     Math.max(
       1,
@@ -240,11 +209,9 @@ function getBookSize() {
 }
 
 
-/*
- * ============================================
- * CURRENT PAGE
- * ============================================
- */
+/* ============================================
+   CURRENT PAGE
+   ============================================ */
 
 function getCurrentPage() {
 
@@ -253,7 +220,7 @@ function getCurrentPage() {
   }
 
 
-  const page =
+  const currentPage =
     window.jQuery(
       flipbook
     ).turn(
@@ -261,16 +228,17 @@ function getCurrentPage() {
     );
 
 
-  return Number(page) || 1;
+  return (
+    Number(currentPage) ||
+    1
+  );
 
 }
 
 
-/*
- * ============================================
- * CURRENT VISIBLE PAGES
- * ============================================
- */
+/* ============================================
+   CURRENT VIEW
+   ============================================ */
 
 function getCurrentView() {
 
@@ -279,7 +247,7 @@ function getCurrentView() {
   }
 
 
-  const view =
+  const currentView =
     window.jQuery(
       flipbook
     ).turn(
@@ -288,13 +256,17 @@ function getCurrentView() {
 
 
   if (
-    !Array.isArray(view)
+    !Array.isArray(
+      currentView
+    )
   ) {
+
     return [];
+
   }
 
 
-  return view.filter(
+  return currentView.filter(
     (pageNumber) => {
 
       return (
@@ -310,11 +282,9 @@ function getCurrentView() {
 }
 
 
-/*
- * ============================================
- * POSITION THE BOOK
- * ============================================
- */
+/* ============================================
+   BOOK POSITION
+   ============================================ */
 
 function updateBookPosition() {
 
@@ -331,11 +301,6 @@ function updateBookPosition() {
 
   /*
    * FRONT COVER
-   *
-   * Turn.js places Page 1 on one half
-   * of the double-page canvas.
-   *
-   * CSS centers the individual cover.
    */
 
   if (
@@ -370,7 +335,7 @@ function updateBookPosition() {
 
 
   /*
-   * INTERIOR SPREADS
+   * OPEN BOOK
    */
 
   bookWrapper.classList.add(
@@ -380,11 +345,58 @@ function updateBookPosition() {
 }
 
 
-/*
- * ============================================
- * PAGE LABELS
- * ============================================
- */
+/* ============================================
+   PREPARE TARGET POSITION
+   ============================================ */
+
+function prepareBookPosition(
+  targetPage
+) {
+
+  bookWrapper.classList.remove(
+    "cover-position",
+    "spread-position",
+    "back-position"
+  );
+
+
+  if (
+    targetPage <= 1
+  ) {
+
+    bookWrapper.classList.add(
+      "cover-position"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    targetPage >=
+    CONFIG.totalPages
+  ) {
+
+    bookWrapper.classList.add(
+      "back-position"
+    );
+
+    return;
+
+  }
+
+
+  bookWrapper.classList.add(
+    "spread-position"
+  );
+
+}
+
+
+/* ============================================
+   PAGE LABEL
+   ============================================ */
 
 function getPageLabel() {
 
@@ -395,10 +407,6 @@ function getPageLabel() {
   const view =
     getCurrentView();
 
-
-  /*
-   * FRONT COVER
-   */
 
   if (
     currentPage <= 1
@@ -414,10 +422,6 @@ function getPageLabel() {
 
   }
 
-
-  /*
-   * BACK COVER
-   */
 
   if (
     currentPage >=
@@ -435,58 +439,48 @@ function getPageLabel() {
   }
 
 
-  /*
-   * TWO-PAGE SPREAD
-   */
-
   if (
     view.length >= 2
   ) {
 
-    const leftPage =
+    const left =
       view[0];
 
 
-    const rightPage =
+    const right =
       view[1];
 
 
     return {
       visual:
-        `Pages ${leftPage}–${rightPage}`,
+        `Pages ${left}–${right}`,
 
       accessible:
-        `Showing pages ${leftPage} and ${rightPage}`
+        `Showing pages ${left} and ${right}`
     };
 
   }
 
 
-  /*
-   * FALLBACK
-   */
-
-  const visiblePage =
+  const visible =
     view[0] ||
     currentPage;
 
 
   return {
     visual:
-      `Page ${visiblePage}`,
+      `Page ${visible}`,
 
     accessible:
-      `Showing page ${visiblePage}`
+      `Showing page ${visible}`
   };
 
 }
 
 
-/*
- * ============================================
- * UPDATE INTERFACE
- * ============================================
- */
+/* ============================================
+   UPDATE INTERFACE
+   ============================================ */
 
 function updateInterface() {
 
@@ -494,18 +488,10 @@ function updateInterface() {
     getCurrentPage();
 
 
-  /*
-   * Disable Previous on cover.
-   */
-
   previousButton.disabled =
     isTurning ||
     currentPage <= 1;
 
-
-  /*
-   * Disable Next on back cover.
-   */
 
   nextButton.disabled =
     isTurning ||
@@ -517,13 +503,6 @@ function updateInterface() {
     getPageLabel();
 
 
-  /*
-   * Page indicator is optional.
-   *
-   * It can remain visually hidden in CSS
-   * without affecting functionality.
-   */
-
   if (pageIndicator) {
 
     pageIndicator.textContent =
@@ -531,10 +510,6 @@ function updateInterface() {
 
   }
 
-
-  /*
-   * Accessible status is also optional.
-   */
 
   if (status) {
 
@@ -546,74 +521,9 @@ function updateInterface() {
 }
 
 
-/*
- * ============================================
- * PREPARE POSITION WHILE TURNING
- * ============================================
- */
-
-function prepareBookPosition(
-  targetPage
-) {
-
-  bookWrapper.classList.remove(
-    "cover-position",
-    "spread-position",
-    "back-position"
-  );
-
-
-  /*
-   * Moving toward Page 1.
-   */
-
-  if (
-    targetPage <= 1
-  ) {
-
-    bookWrapper.classList.add(
-      "cover-position"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Moving toward final page.
-   */
-
-  if (
-    targetPage >=
-    CONFIG.totalPages
-  ) {
-
-    bookWrapper.classList.add(
-      "back-position"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Moving toward an interior spread.
-   */
-
-  bookWrapper.classList.add(
-    "spread-position"
-  );
-
-}
-
-
-/*
- * ============================================
- * NEXT
- * ============================================
- */
+/* ============================================
+   NEXT
+   ============================================ */
 
 function goNext() {
 
@@ -625,12 +535,8 @@ function goNext() {
   }
 
 
-  const currentPage =
-    getCurrentPage();
-
-
   if (
-    currentPage >=
+    getCurrentPage() >=
     CONFIG.totalPages
   ) {
     return;
@@ -646,11 +552,9 @@ function goNext() {
 }
 
 
-/*
- * ============================================
- * PREVIOUS
- * ============================================
- */
+/* ============================================
+   PREVIOUS
+   ============================================ */
 
 function goPrevious() {
 
@@ -662,12 +566,8 @@ function goPrevious() {
   }
 
 
-  const currentPage =
-    getCurrentPage();
-
-
   if (
-    currentPage <= 1
+    getCurrentPage() <= 1
   ) {
     return;
   }
@@ -682,11 +582,9 @@ function goPrevious() {
 }
 
 
-/*
- * ============================================
- * RESIZE
- * ============================================
- */
+/* ============================================
+   RESIZE
+   ============================================ */
 
 function resizeBook() {
 
@@ -708,21 +606,14 @@ function resizeBook() {
   );
 
 
-  /*
-   * Reapply the correct cover/spread
-   * position after resizing.
-   */
-
   updateBookPosition();
 
 }
 
 
-/*
- * ============================================
- * INITIALISE TURN.JS
- * ============================================
- */
+/* ============================================
+   INITIALISE
+   ============================================ */
 
 function initialiseBook() {
 
@@ -739,102 +630,42 @@ function initialiseBook() {
     flipbook
   ).turn({
 
-    /*
-     * Responsive dimensions calculated
-     * from .book-area.
-     */
-
     width:
       size.width,
-
 
     height:
       size.height,
 
-
-    /*
-     * Two-page book.
-     */
-
     display:
       "double",
-
-
-    /*
-     * Begin on Page 1.
-     */
 
     page:
       1,
 
-
-    /*
-     * UPDATED:
-     *
-     * Page turn is now 700ms.
-     */
-
     duration:
       CONFIG.duration,
-
-
-    /*
-     * Enable natural Turn.js shading.
-     */
 
     gradients:
       true,
 
-
-    /*
-     * Enable acceleration.
-     */
-
     acceleration:
       true,
-
-
-    /*
-     * Physical page elevation.
-     */
 
     elevation:
       CONFIG.elevation,
 
-
-    /*
-     * ======================================
-     * TURN.JS EVENTS
-     * ======================================
-     */
-
     when: {
 
+      start:
+        function () {
 
-      /*
-       * Page starts moving.
-       */
-
-      start: function () {
-
-        isTurning = true;
+          isTurning = true;
 
 
-        updateInterface();
+          updateInterface();
 
-      },
+        },
 
-
-      /*
-       * Turn.js identifies target page.
-       *
-       * Start moving the complete book
-       * toward:
-       *
-       * centered cover
-       * full spread
-       * centered back cover
-       */
 
       turning:
         function (
@@ -849,10 +680,6 @@ function initialiseBook() {
         },
 
 
-      /*
-       * Destination reached.
-       */
-
       turned:
         function () {
 
@@ -866,10 +693,6 @@ function initialiseBook() {
 
         },
 
-
-      /*
-       * Animation finished.
-       */
 
       end:
         function () {
@@ -889,16 +712,8 @@ function initialiseBook() {
   });
 
 
-  /*
-   * Turn.js now exists.
-   */
-
   isInitialised = true;
 
-
-  /*
-   * Initial front-cover state.
-   */
 
   updateBookPosition();
 
@@ -912,25 +727,32 @@ function initialiseBook() {
       totalPages:
         CONFIG.totalPages,
 
-      physicalPage:
-        `${CONFIG.pageWidth} × ${CONFIG.pageHeight}`,
+      pageSize:
+        "720 × 720",
 
-      openBook:
-        `${CONFIG.bookWidth} × ${CONFIG.bookHeight}`,
+      bookRatio:
+        "2:1",
 
       duration:
-        `${CONFIG.duration}ms`
+        "700ms",
+
+      desktop:
+        "1152px+",
+
+      tablet:
+        "700px–1151px",
+
+      mobile:
+        "699px and below"
     }
   );
 
 }
 
 
-/*
- * ============================================
- * BUTTON EVENTS
- * ============================================
- */
+/* ============================================
+   EVENTS
+   ============================================ */
 
 nextButton.addEventListener(
   "click",
@@ -944,19 +766,9 @@ previousButton.addEventListener(
 );
 
 
-/*
- * ============================================
- * KEYBOARD NAVIGATION
- * ============================================
- */
-
 window.addEventListener(
   "keydown",
   (event) => {
-
-    /*
-     * RIGHT ARROW
-     */
 
     if (
       event.key ===
@@ -965,15 +777,10 @@ window.addEventListener(
 
       event.preventDefault();
 
-
       goNext();
 
     }
 
-
-    /*
-     * LEFT ARROW
-     */
 
     if (
       event.key ===
@@ -981,7 +788,6 @@ window.addEventListener(
     ) {
 
       event.preventDefault();
-
 
       goPrevious();
 
@@ -991,11 +797,9 @@ window.addEventListener(
 );
 
 
-/*
- * ============================================
- * RESPONSIVE RESIZING
- * ============================================
- */
+/* ============================================
+   RESPONSIVE RESIZE
+   ============================================ */
 
 window.addEventListener(
   "resize",
@@ -1008,11 +812,7 @@ window.addEventListener(
 
     resizeTimer =
       window.setTimeout(
-        () => {
-
-          resizeBook();
-
-        },
+        resizeBook,
         CONFIG.resizeDelay
       );
 
@@ -1020,11 +820,9 @@ window.addEventListener(
 );
 
 
-/*
- * ============================================
- * PREVENT IMAGE DRAGGING
- * ============================================
- */
+/* ============================================
+   PREVENT IMAGE DRAGGING
+   ============================================ */
 
 document.addEventListener(
   "dragstart",
@@ -1043,11 +841,9 @@ document.addEventListener(
 );
 
 
-/*
- * ============================================
- * INITIALISE
- * ============================================
- */
+/* ============================================
+   START
+   ============================================ */
 
 window.addEventListener(
   "load",

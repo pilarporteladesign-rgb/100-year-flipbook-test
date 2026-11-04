@@ -16,8 +16,8 @@
   --cover-shadow:
     0 22px 55px rgba(0, 28, 52, 0.24);
 
-  --desktop-button-size: 56px;
-  --desktop-min-gap: 64px;
+  --desktop-button-size: 48px;
+  --desktop-min-gap: 56px;
 
   --tablet-button-size: 48px;
   --mobile-button-size: 48px;

@@ -24,19 +24,138 @@
 <body>
   <main class="flipbook-app">
     <section
-      class="flipbook"
+      class="flipbook-experience"
       aria-label="Gallagher 100-year commemorative flipbook"
     >
-      <div class="book-viewport">
+      <div
+        id="book-frame"
+        class="book-frame is-front-cover"
+      >
         <div
-          id="book-stage"
-          class="book-stage"
-          aria-live="polite"
+          id="book-positioner"
+          class="book-positioner"
         >
-          <!--
-            The visible pages and animated page
-            are created by script.js.
-          -->
+          <div
+            id="flipbook"
+            class="flipbook"
+            aria-hidden="true"
+          >
+            <div
+              class="flip-page hard-cover front-cover"
+              data-page-number="1"
+            >
+              <img
+                src="./assets/pages/page-01.jpg"
+                alt=""
+                width="720"
+                height="720"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="2"
+            >
+              <img
+                src="./assets/pages/page-02.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="3"
+            >
+              <img
+                src="./assets/pages/page-03.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="4"
+            >
+              <img
+                src="./assets/pages/page-04.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="5"
+            >
+              <img
+                src="./assets/pages/page-05.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="6"
+            >
+              <img
+                src="./assets/pages/page-06.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page interior-page"
+              data-page-number="7"
+            >
+              <img
+                src="./assets/pages/page-07.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+
+            <div
+              class="flip-page hard-cover back-cover"
+              data-page-number="8"
+            >
+              <img
+                src="./assets/pages/page-08.jpg"
+                alt=""
+                width="720"
+                height="720"
+                loading="eager"
+                draggable="false"
+              >
+            </div>
+          </div>
+
+          <div
+            class="interaction-blocker"
+            aria-hidden="true"
+          ></div>
         </div>
       </div>
 
@@ -48,7 +167,7 @@
           id="previous-button"
           class="control-button"
           type="button"
-          aria-label="Previous pages"
+          aria-label="View previous pages"
           disabled
         >
           <svg
@@ -73,7 +192,7 @@
           id="next-button"
           class="control-button"
           type="button"
-          aria-label="Next pages"
+          aria-label="View next pages"
         >
           <svg
             aria-hidden="true"
@@ -97,6 +216,17 @@
     </section>
   </main>
 
+  <!-- jQuery is required by Turn.js -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+  ></script>
+
+  <!-- Turn.js page-turn engine -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"
+  ></script>
+
+  <!-- Our application controls -->
   <script src="./script.js"></script>
 </body>
 </html>

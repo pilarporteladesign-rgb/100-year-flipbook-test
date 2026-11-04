@@ -1,44 +1,22 @@
-/*
- * ============================================
- * CONFIGURATION
- * ============================================
- */
+/* ============================================
+   BASE
+   ============================================ */
 
 :root {
-  --page-width: 720;
-  --page-height: 720;
-
-  --book-ratio: 2 / 1;
-  --page-ratio: 1 / 1;
-
   --book-max-width: 1440px;
 
-  --background: transparent;
+  --blue: #0074c8;
+  --blue-dark: #152f87;
+
   --page-background: #ffffff;
 
-  --text-color: #243746;
+  --shadow:
+    0 18px 45px rgba(0, 28, 52, 0.18);
 
-  --control-blue: #006fba;
-  --control-blue-dark: #152f87;
-  --control-hover: #eef7fc;
-
-  --page-shadow:
-    0 18px 48px rgba(0, 30, 55, 0.2);
-
-  --closed-shadow:
-    0 22px 54px rgba(0, 30, 55, 0.24);
-
-  --book-movement-duration: 640ms;
-  --book-movement-easing:
-    cubic-bezier(0.65, 0, 0.35, 1);
+  --cover-shadow:
+    0 22px 55px rgba(0, 28, 52, 0.24);
 }
 
-
-/*
- * ============================================
- * RESET
- * ============================================
- */
 
 *,
 *::before,
@@ -46,149 +24,137 @@
   box-sizing: border-box;
 }
 
+
 html,
-body {
-  width: 100%;
-  min-height: 100%;
-}
-
-html {
-  background: transparent;
-}
-
 body {
   margin: 0;
 
+  width: 100%;
+  min-height: 100%;
+
+  background: transparent;
+}
+
+
+body {
   overflow-x: hidden;
-
-  background:
-    var(--background);
-
-  color:
-    var(--text-color);
 
   font-family:
     Arial,
     Helvetica,
     sans-serif;
+
+  color: #243746;
 }
 
 
-/*
- * ============================================
- * APPLICATION
- * ============================================
- */
+/* ============================================
+   APPLICATION
+   ============================================ */
 
 .flipbook-app {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   width: 100%;
 
   padding:
     clamp(16px, 3vw, 40px);
 }
 
-.flipbook-experience {
-  width: 100%;
-  max-width:
-    var(--book-max-width);
-}
 
+/* ============================================
+   BOOK AREA
 
-/*
- * ============================================
- * BOOK FRAME
- *
- * The frame always maintains the complete
- * two-page 1440 × 720 footprint.
- * ============================================
- */
+   Always represents the complete open-book
+   footprint:
 
-.book-frame {
+   1440 × 720
+   2:1 aspect ratio
+   ============================================ */
+
+.book-area {
   position: relative;
 
   width: 100%;
-  aspect-ratio:
-    var(--book-ratio);
+  max-width:
+    var(--book-max-width);
+
+  aspect-ratio: 2 / 1;
+
+  margin-inline: auto;
 
   overflow: visible;
 }
 
 
-/*
- * Turn.js needs a complete two-page-sized
- * element. The positioner moves that element
- * horizontally so the covers appear centered.
- */
+/* ============================================
+   BOOK WRAPPER
+   ============================================ */
 
-.book-positioner {
+.book-wrapper {
   position: absolute;
+
   inset: 0;
 
   width: 100%;
   height: 100%;
 
-  transform:
-    translateX(0);
-
-  transform-origin:
-    center center;
+  transform: translateX(0);
 
   transition:
     transform
-    var(--book-movement-duration)
-    var(--book-movement-easing);
+    700ms
+    cubic-bezier(0.65, 0, 0.35, 1);
 
-  will-change:
-    transform;
+  will-change: transform;
 }
 
 
 /*
- * On Page 1, Turn.js places the cover on the
- * right half of the full book. Moving the full
- * book 25% to the left centers the cover.
- */
+   PAGE 1
 
-.book-frame.is-front-cover
-.book-positioner {
+   Turn.js puts the front cover on the
+   right half of a double-page book.
+
+   Move the complete book left by 25%
+   so Page 1 visually sits in the center.
+*/
+
+.book-wrapper.cover-position {
   transform:
     translateX(-25%);
 }
 
 
 /*
- * Interior spreads occupy the complete stage.
- */
+   OPEN SPREAD
 
-.book-frame.is-open
-.book-positioner {
+   Pages occupy both halves of the stage.
+*/
+
+.book-wrapper.spread-position {
   transform:
     translateX(0);
 }
 
 
 /*
- * On Page 8, Turn.js places the back cover on
- * the left half. Moving the full book 25% to
- * the right centers it.
- */
+   BACK COVER
 
-.book-frame.is-back-cover
-.book-positioner {
+   Turn.js leaves the final page on the
+   left side.
+
+   Move the complete book right by 25%
+   to center Page 8.
+*/
+
+.book-wrapper.back-position {
   transform:
     translateX(25%);
 }
 
 
-/*
- * ============================================
- * FLIPBOOK
- * ============================================
- */
+/* ============================================
+   FLIPBOOK
+   ============================================ */
 
 .flipbook {
   position: absolute;
@@ -207,36 +173,11 @@ body {
 }
 
 
-/*
- * Block mouse/touch page grabbing.
- *
- * The external Previous and Next buttons
- * remain available because this blocker only
- * covers the book.
- */
+/* ============================================
+   PAGES
+   ============================================ */
 
-.interaction-blocker {
-  position: absolute;
-  z-index: 10000;
-
-  inset: 0;
-
-  cursor: default;
-
-  background:
-    transparent;
-
-  touch-action: pan-y;
-}
-
-
-/*
- * ============================================
- * PAGES
- * ============================================
- */
-
-.flip-page {
+.page {
   position: relative;
 
   width: 100%;
@@ -247,14 +188,12 @@ body {
   background:
     var(--page-background);
 
-  transform-style:
-    preserve-3d;
-
   user-select: none;
   -webkit-user-select: none;
 }
 
-.flip-page img {
+
+.page img {
   display: block;
 
   width: 100%;
@@ -273,116 +212,102 @@ body {
 }
 
 
-/*
- * ============================================
- * INTERIOR-PAGE DEPTH
- * ============================================
- */
+/* ============================================
+   HARD COVERS
+   ============================================ */
 
-.interior-page::after {
-  content: "";
-
-  position: absolute;
-
-  top: 0;
-  bottom: 0;
-
-  width: 8%;
-
-  pointer-events: none;
-}
-
-
-/*
- * Turn.js marks pages as odd/even.
- *
- * Even pages sit on the left.
- * Odd pages sit on the right.
- */
-
-.flip-page.even::after {
-  right: 0;
-
-  background:
-    linear-gradient(
-      to left,
-      rgba(0, 0, 0, 0.13),
-      rgba(0, 0, 0, 0.04) 38%,
-      transparent 100%
-    );
-}
-
-.flip-page.odd::after {
-  left: 0;
-
-  background:
-    linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.13),
-      rgba(0, 0, 0, 0.04) 38%,
-      transparent 100%
-    );
-}
-
-
-/*
- * ============================================
- * COVERS
- * ============================================
- */
-
-.hard-cover {
+.page.hard {
   background:
     var(--page-background);
 
   box-shadow:
-    var(--closed-shadow);
-}
-
-.front-cover,
-.back-cover {
-  overflow: hidden;
+    var(--cover-shadow);
 }
 
 
-/*
- * ============================================
- * TURN.JS-GENERATED ELEMENTS
- * ============================================
- */
+/* ============================================
+   TURN.JS GENERATED PAGES
+   ============================================ */
 
 .flipbook .turn-page {
   background:
     var(--page-background);
 
   box-shadow:
-    var(--page-shadow);
-}
-
-.flipbook .turn-page-wrapper {
-  transform-style:
-    preserve-3d;
-}
-
-.flipbook .shadow {
-  opacity: 0.28;
+    var(--shadow);
 }
 
 
-/*
- * ============================================
- * OPEN-BOOK SPINE
- * ============================================
- */
+/* ============================================
+   INNER-SPINE SHADING
+   ============================================ */
 
-.book-frame.is-open::after {
+.flipbook .even::after,
+.flipbook .odd::after {
   content: "";
 
   position: absolute;
-  z-index: 9000;
 
-  top: 1.5%;
-  bottom: 1.5%;
+  z-index: 8;
+
+  top: 0;
+  bottom: 0;
+
+  width: 7%;
+
+  pointer-events: none;
+}
+
+
+.flipbook .even::after {
+  right: 0;
+
+  background:
+    linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.13),
+      rgba(0, 0, 0, 0.03) 45%,
+      transparent
+    );
+}
+
+
+.flipbook .odd::after {
+  left: 0;
+
+  background:
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.13),
+      rgba(0, 0, 0, 0.03) 45%,
+      transparent
+    );
+}
+
+
+/* ============================================
+   TURN.JS SHADOW
+   ============================================ */
+
+.flipbook .shadow {
+  opacity: 0.25;
+}
+
+
+/* ============================================
+   CENTER SPINE
+   ============================================ */
+
+.book-area::after {
+  content: "";
+
+  position: absolute;
+
+  z-index: 5000;
+
+  top: 1%;
+  bottom: 1%;
+
   left: 50%;
 
   width: 2px;
@@ -390,44 +315,68 @@ body {
   transform:
     translateX(-50%);
 
-  opacity: 1;
+  opacity: 0;
 
   background:
     linear-gradient(
       to bottom,
       transparent,
-      rgba(0, 0, 0, 0.16) 8%,
-      rgba(0, 0, 0, 0.25) 50%,
-      rgba(0, 0, 0, 0.16) 92%,
+      rgba(0, 0, 0, 0.16) 10%,
+      rgba(0, 0, 0, 0.24) 50%,
+      rgba(0, 0, 0, 0.16) 90%,
       transparent
     );
 
   box-shadow:
-    0 0 18px rgba(0, 0, 0, 0.18);
+    0 0 18px
+    rgba(0, 0, 0, 0.18);
 
   pointer-events: none;
 
   transition:
-    opacity 220ms ease;
-}
-
-.book-frame.is-front-cover::after,
-.book-frame.is-back-cover::after {
-  opacity: 0;
+    opacity 250ms ease;
 }
 
 
-/*
- * ============================================
- * CONTROLS
- * ============================================
- */
+.book-area.is-open::after {
+  opacity: 1;
+}
+
+
+/* ============================================
+   BLOCK MOUSE PAGE GRABBING
+   ============================================ */
+
+.book-interaction-blocker {
+  position: absolute;
+
+  z-index: 10000;
+
+  inset: 0;
+
+  background: transparent;
+
+  cursor: default;
+
+  /*
+    User can still vertically scroll a webpage
+    on touch devices.
+  */
+  touch-action: pan-y;
+}
+
+
+/* ============================================
+   CONTROLS
+   ============================================ */
 
 .book-controls {
   display: grid;
 
   grid-template-columns:
-    56px minmax(112px, auto) 56px;
+    56px
+    minmax(110px, auto)
+    56px;
 
   align-items: center;
   justify-content: center;
@@ -435,11 +384,13 @@ body {
   gap: 18px;
 
   margin-top:
-    clamp(18px, 3vw, 30px);
+    clamp(20px, 3vw, 32px);
 }
+
 
 .control-button {
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
 
@@ -449,51 +400,54 @@ body {
   padding: 0;
 
   border:
-    2px solid var(--control-blue);
+    2px solid var(--blue);
 
   border-radius: 50%;
 
-  background:
-    #ffffff;
+  background: #ffffff;
 
   color:
-    var(--control-blue);
+    var(--blue);
 
   cursor: pointer;
 
   transition:
     background-color 160ms ease,
-    color 160ms ease,
     opacity 160ms ease,
     transform 160ms ease;
 }
 
+
 .control-button:hover:not(:disabled) {
   background:
-    var(--control-hover);
+    #eef7fc;
 
   transform:
     scale(1.04);
 }
+
 
 .control-button:active:not(:disabled) {
   transform:
     scale(0.96);
 }
 
+
 .control-button:focus-visible {
   outline:
     3px solid
-    var(--control-blue-dark);
+    var(--blue-dark);
 
   outline-offset: 3px;
 }
 
+
 .control-button:disabled {
-  opacity: 0.35;
+  opacity: 0.32;
 
   cursor: default;
 }
+
 
 .control-button svg {
   width: 25px;
@@ -510,47 +464,24 @@ body {
   stroke-linejoin: round;
 }
 
+
 .page-indicator {
-  min-width: 112px;
+  min-width: 110px;
 
   margin: 0;
 
   text-align: center;
 
-  font-size:
-    0.9375rem;
-
+  font-size: 15px;
   font-weight: 600;
 
   line-height: 1.4;
 }
 
 
-/*
- * ============================================
- * LOADING STATE
- * ============================================
- */
-
-.flipbook-experience.is-loading
-.book-frame {
-  opacity: 0;
-}
-
-.flipbook-experience.is-ready
-.book-frame {
-  opacity: 1;
-
-  transition:
-    opacity 260ms ease;
-}
-
-
-/*
- * ============================================
- * ACCESSIBILITY
- * ============================================
- */
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
 
 .visually-hidden {
   position: absolute;
@@ -563,8 +494,7 @@ body {
 
   overflow: hidden;
 
-  clip:
-    rect(0 0 0 0);
+  clip: rect(0 0 0 0);
 
   white-space: nowrap;
 
@@ -572,60 +502,61 @@ body {
 }
 
 
-/*
- * ============================================
- * SMALL SCREENS
- * ============================================
- */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 700px) {
+
   .flipbook-app {
-    padding:
-      12px;
+    padding: 12px;
   }
+
 
   .book-controls {
     grid-template-columns:
-      48px minmax(96px, auto) 48px;
+      48px
+      minmax(96px, auto)
+      48px;
 
     gap: 12px;
 
     margin-top: 18px;
   }
 
+
   .control-button {
     width: 48px;
     height: 48px;
   }
+
 
   .control-button svg {
     width: 22px;
     height: 22px;
   }
 
+
   .page-indicator {
     min-width: 96px;
 
-    font-size:
-      0.875rem;
+    font-size: 14px;
   }
 }
 
 
-/*
- * ============================================
- * REDUCED MOTION
- * ============================================
- */
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .book-positioner {
-    transition-duration:
-      1ms;
+
+  .book-wrapper {
+    transition-duration: 1ms;
   }
 
+
   .control-button {
-    transition-duration:
-      1ms;
+    transition-duration: 1ms;
   }
 }

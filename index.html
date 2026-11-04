@@ -8,12 +8,7 @@
     content="width=device-width, initial-scale=1"
   >
 
-  <meta
-    name="description"
-    content="Gallagher 100-year interactive flipbook"
-  >
-
-  <title>Gallagher 100-Year Flipbook</title>
+  <title>100-Year Flipbook</title>
 
   <link
     rel="stylesheet"
@@ -22,211 +17,195 @@
 </head>
 
 <body>
+
   <main class="flipbook-app">
-    <section
-      class="flipbook-experience"
-      aria-label="Gallagher 100-year commemorative flipbook"
-    >
+
+    <div class="book-area">
+
       <div
-        id="book-frame"
-        class="book-frame is-front-cover"
+        id="book-wrapper"
+        class="book-wrapper cover-position"
       >
+
         <div
-          id="book-positioner"
-          class="book-positioner"
+          id="flipbook"
+          class="flipbook"
         >
-          <div
-            id="flipbook"
-            class="flipbook"
-            aria-hidden="true"
-          >
-            <div
-              class="flip-page hard-cover front-cover"
-              data-page-number="1"
-            >
-              <img
-                src="./assets/pages/page-01.jpg"
-                alt=""
-                width="720"
-                height="720"
-                draggable="false"
-              >
-            </div>
 
-            <div
-              class="flip-page interior-page"
-              data-page-number="2"
+          <div class="page hard">
+            <img
+              src="./assets/pages/page-01.jpg"
+              alt="Front cover"
+              width="720"
+              height="720"
+              draggable="false"
             >
-              <img
-                src="./assets/pages/page-02.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page interior-page"
-              data-page-number="3"
-            >
-              <img
-                src="./assets/pages/page-03.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page interior-page"
-              data-page-number="4"
-            >
-              <img
-                src="./assets/pages/page-04.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page interior-page"
-              data-page-number="5"
-            >
-              <img
-                src="./assets/pages/page-05.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page interior-page"
-              data-page-number="6"
-            >
-              <img
-                src="./assets/pages/page-06.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page interior-page"
-              data-page-number="7"
-            >
-              <img
-                src="./assets/pages/page-07.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
-
-            <div
-              class="flip-page hard-cover back-cover"
-              data-page-number="8"
-            >
-              <img
-                src="./assets/pages/page-08.jpg"
-                alt=""
-                width="720"
-                height="720"
-                loading="eager"
-                draggable="false"
-              >
-            </div>
           </div>
 
-          <div
-            class="interaction-blocker"
-            aria-hidden="true"
-          ></div>
+          <div class="page">
+            <img
+              src="./assets/pages/page-02.jpg"
+              alt="Page 2"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page">
+            <img
+              src="./assets/pages/page-03.jpg"
+              alt="Page 3"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page">
+            <img
+              src="./assets/pages/page-04.jpg"
+              alt="Page 4"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page">
+            <img
+              src="./assets/pages/page-05.jpg"
+              alt="Page 5"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page">
+            <img
+              src="./assets/pages/page-06.jpg"
+              alt="Page 6"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page">
+            <img
+              src="./assets/pages/page-07.jpg"
+              alt="Page 7"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
+          <div class="page hard">
+            <img
+              src="./assets/pages/page-08.jpg"
+              alt="Back cover"
+              width="720"
+              height="720"
+              draggable="false"
+            >
+          </div>
+
         </div>
+
+        <!--
+          Prevent direct grabbing/dragging of pages.
+          Navigation is handled by our buttons.
+        -->
+        <div
+          class="book-interaction-blocker"
+          aria-hidden="true"
+        ></div>
+
       </div>
 
-      <div
-        class="book-controls"
-        aria-label="Flipbook navigation"
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <nav
+      class="book-controls"
+      aria-label="Flipbook navigation"
+    >
+
+      <button
+        id="previous-button"
+        class="control-button"
+        type="button"
+        aria-label="Previous pages"
+        disabled
       >
-        <button
-          id="previous-button"
-          class="control-button"
-          type="button"
-          aria-label="View previous pages"
-          disabled
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M15.5 5L8.5 12L15.5 19"
-            />
-          </svg>
-        </button>
+          <path d="M15.5 5L8.5 12L15.5 19" />
+        </svg>
+      </button>
 
-        <p
-          id="page-indicator"
-          class="page-indicator"
-          aria-live="polite"
-        >
-          Cover
-        </p>
-
-        <button
-          id="next-button"
-          class="control-button"
-          type="button"
-          aria-label="View next pages"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M8.5 5L15.5 12L8.5 19"
-            />
-          </svg>
-        </button>
-      </div>
 
       <p
-        id="book-status"
-        class="visually-hidden"
+        id="page-indicator"
+        class="page-indicator"
         aria-live="polite"
-        aria-atomic="true"
       >
-        Front cover
+        Cover
       </p>
-    </section>
+
+
+      <button
+        id="next-button"
+        class="control-button"
+        type="button"
+        aria-label="Next pages"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="M8.5 5L15.5 12L8.5 19" />
+        </svg>
+      </button>
+
+    </nav>
+
+
+    <p
+      id="status"
+      class="visually-hidden"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      Front cover
+    </p>
+
   </main>
 
-  <!-- jQuery is required by Turn.js -->
+
+  <!-- jQuery -->
+
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
   ></script>
 
-  <!-- Turn.js page-turn engine -->
+
+  <!-- Turn.js v3 -->
+
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"
   ></script>
 
-  <!-- Our application controls -->
+
+  <!-- Flipbook application -->
+
   <script src="./script.js"></script>
+
 </body>
 </html>
